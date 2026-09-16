@@ -1,4 +1,5 @@
 import board
 
 if __name__ == "__main__":
-    board.startScreen()
+    app = board.app()
+    app.mainloop()
