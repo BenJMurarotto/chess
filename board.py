@@ -39,6 +39,7 @@ class gameScreen(tk.Frame):
         super().__init__(parent)
         tk.Button(self, text="quit", command=parent.destroy).grid(row=1, column=0)
         self.create_board()
+        self.board_square_tags = []
 
     def create_board(self):
         board_size = gameScreen.square_size * 8
@@ -50,20 +51,28 @@ class gameScreen(tk.Frame):
         for row in range(8):
             for col in range(8):
                 color = "#f0d9b5" if (row + col) % 2 == 0 else "#b58863"
-
+                tag = f"{gameScreen.row_map.get(row + 1)}{col + 1}"
+                print(tag)
                 canvas.create_rectangle(
                     col * gameScreen.square_size,
                     row * gameScreen.square_size,
                     (col + 1) * gameScreen.square_size,
                     (row + 1) * gameScreen.square_size,
                     fill=color,
+                    tags=tag,
                     outline="",
                 )
 
         canvas.bind("<Button-1>", self.square_listener)
+        canvas.bindtags(
+            self.board_square_tags,
+        )
 
     def square_listener(self, event):
         col = event.x // gameScreen.square_size
         row = event.y // gameScreen.square_size
 
         return print(f"Square clicked: {gameScreen.row_map.get(row + 1)}{col + 1}")
+
+    def square_listener_two(self, event):
+        event
