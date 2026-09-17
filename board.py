@@ -62,11 +62,8 @@ class gameScreen(tk.Frame):
                     tags=tag,
                     outline="",
                 )
-
+        self.set_pieces(canvas=canvas)
         canvas.bind("<Button-1>", self.square_listener)
-        canvas.bindtags(
-            self.board_square_tags,
-        )
 
     def square_listener(self, event):
         col = event.x // gameScreen.square_size
@@ -74,5 +71,42 @@ class gameScreen(tk.Frame):
 
         return print(f"Square clicked: {gameScreen.row_map.get(row + 1)}{col + 1}")
 
-    def square_listener_two(self, event):
-        event
+    def get_coords(self, square, canvas):
+        floating_points = canvas.coords(
+            square
+        )  # coords returns floating_points we want xy for piece obj
+        print(floating_points)
+        coords = (
+            (floating_points[0] + floating_points[2]) / 2,
+            (floating_points[1] + floating_points[3]) / 2,
+        )
+        return coords
+
+    # def square_listener_two(self, event):
+    # set pieces with hard coded dicts containing piece types and starting square values
+    def set_pieces(self, canvas):
+        white_pieces = {
+            "P": ("A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"),
+            "B": ("C1", "F1"),
+            "Kn": ("B1", "G1"),
+            "R": ("A1", "H1"),
+            "Q": ("D1",),
+            "K": ("E1",),
+        }
+        black_pieces = {
+            "P": ("A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"),
+            "B": ("C8", "F8"),
+            "Kn": ("B8", "G8"),
+            "R": ("A8", "H8"),
+            "Q": ("D8",),
+            "K": ("E8",),
+        }
+
+        for piece_type in white_pieces.keys():
+            start_squares = white_pieces[piece_type]
+            for square in start_squares:
+                canvas.create_text(
+                    self.get_coords(square=square, canvas=canvas),
+                    text=piece_type,
+                    activefill="white",
+                )
