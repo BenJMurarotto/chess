@@ -34,6 +34,9 @@ class startScreen(tk.Frame):
 class gameScreen(tk.Frame):
     square_size = 80
     row_map = {1: "H", 2: "G", 3: "F", 4: "E", 5: "D", 6: "C", 7: "B", 8: "A"}
+    select_flag = False
+    raised_green_square = None
+    selected_piece = None
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -43,6 +46,7 @@ class gameScreen(tk.Frame):
 
     def create_board(self):
         board_size = gameScreen.square_size * 8
+        piece_selected = False
 
         canvas = tk.Canvas(self, width=board_size, height=board_size)
         canvas.grid(
@@ -53,6 +57,15 @@ class gameScreen(tk.Frame):
                 color = "#f0d9b5" if (row + col) % 2 == 0 else "#b58863"
                 tag = f"{gameScreen.row_map.get(col + 1)}{row + 1}"
                 print(tag)
+                canvas.create_rectangle(
+                    col * gameScreen.square_size,
+                    row * gameScreen.square_size,
+                    (col + 1) * gameScreen.square_size,
+                    (row + 1) * gameScreen.square_size,
+                    fill="green",
+                    tags=(tag, "greensquare"),
+                    outline="",
+                )
                 canvas.create_rectangle(
                     col * gameScreen.square_size,
                     row * gameScreen.square_size,
@@ -122,9 +135,23 @@ class gameScreen(tk.Frame):
         tags = canvas.gettags(item)
 
         if canvas.type(item) == "text":
+            self.green_square_lower(canvas)
+            square = tags[2]
+            canvas.tag_raise(f"greensquare && {square}")
+            gameScreen.raised_green_square = square
+            gameScreen.select_flag = True
+            gameScreen.selected_piece = (square, tags[1])
             print(tags)
         else:
             square = tags[0]
             print(f"{square}: empty")
 
-        return item
+        return item, square
+
+    def move_piece(self, event):
+        canvas = event.widget
+        item = canvas.find_withtag("current")[0]
+
+    def green_square_lower(self, canvas):
+        if gameScreen.select_flag:
+            canvas.tag_lower(f"greensquare && {gameScreen.raised_green_square}")
