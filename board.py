@@ -51,7 +51,7 @@ class gameScreen(tk.Frame):
         for row in range(8):
             for col in range(8):
                 color = "#f0d9b5" if (row + col) % 2 == 0 else "#b58863"
-                tag = f"{gameScreen.row_map.get(row + 1)}{col + 1}"
+                tag = f"{gameScreen.row_map.get(col + 1)}{row + 1}"
                 print(tag)
                 canvas.create_rectangle(
                     col * gameScreen.square_size,
@@ -63,13 +63,7 @@ class gameScreen(tk.Frame):
                     outline="",
                 )
         self.set_pieces(canvas=canvas)
-        canvas.bind("<Button-1>", self.square_listener)
-
-    def square_listener(self, event):
-        col = event.x // gameScreen.square_size
-        row = event.y // gameScreen.square_size
-
-        return print(f"Square clicked: {gameScreen.row_map.get(row + 1)}{col + 1}")
+        canvas.bind("<Button-1>", self.is_selected)
 
     def get_coords(self, square, canvas):
         floating_points = canvas.coords(
@@ -102,11 +96,35 @@ class gameScreen(tk.Frame):
             "K": ("E8",),
         }
 
-        for piece_type in white_pieces.keys():
+        for piece_type in white_pieces:
             start_squares = white_pieces[piece_type]
             for square in start_squares:
                 canvas.create_text(
                     self.get_coords(square=square, canvas=canvas),
                     text=piece_type,
                     activefill="white",
+                    tags=("white", piece_type, square),
                 )
+
+        for piece_type in black_pieces:
+            start_squares = black_pieces[piece_type]
+            for square in start_squares:
+                canvas.create_text(
+                    self.get_coords(square=square, canvas=canvas),
+                    text=piece_type,
+                    activefill="black",
+                    tags=("black", piece_type, square),
+                )
+
+    def is_selected(self, event):
+        canvas = event.widget
+        item = canvas.find_withtag("current")[0]
+        tags = canvas.gettags(item)
+
+        if canvas.type(item) == "text":
+            print(tags)
+        else:
+            square = tags[0]
+            print(f"{square}: empty")
+
+        return item
