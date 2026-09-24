@@ -142,7 +142,9 @@ class gameScreen(tk.Frame):
             gameScreen.select_flag = True
             gameScreen.selected_piece = (square, tags[1])
             print(tags)
-        else:
+        else:  ## on click we check if a piece is already selected then we move said piece to destination
+            if gameScreen.select_flag:
+                canvas.move(gameScreen.selected_piece)
             square = tags[0]
             print(f"{square}: empty")
 
@@ -150,7 +152,9 @@ class gameScreen(tk.Frame):
 
     def move_piece(self, event):
         canvas = event.widget
-        item = canvas.find_withtag("current")[0]
+        x_new_square = canvas.x() // 8
+        y_new_square = canvas.y() // 8
+        print(f"New square intent {x_new_square}, {y_new_square}")
 
     def green_square_lower(self, canvas):
         if gameScreen.select_flag:
